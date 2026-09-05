@@ -1,0 +1,17 @@
+# Environnements Python
+venv/
+__pycache__/
+*.pyc
+
+# Données volumineuses (téléchargées via script, pas versionnées)
+data/raw/*.csv
+data/db/*.sqlite
+
+# Secrets
+.env
+
+# Chroma
+chroma_db/
+
+# OS Windows
+Thumbs.db
