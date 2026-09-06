@@ -1,0 +1,50 @@
+[
+  {
+    "question": "Quel est le chiffre d'affaires total ?",
+    "sql": "SELECT SUM(price) AS total_revenue FROM order_items"
+  },
+  {
+    "question": "Quels sont les 5 produits les plus vendus en quantité ?",
+    "sql": "SELECT product_id, COUNT(*) AS quantity FROM order_items GROUP BY product_id ORDER BY quantity DESC LIMIT 5"
+  },
+  {
+    "question": "Quel est le nombre de commandes par mois en 2017 ?",
+    "sql": "SELECT strftime('%Y-%m', order_purchase_timestamp) AS month, COUNT(*) AS order_count FROM orders WHERE order_purchase_timestamp LIKE '2017%' GROUP BY month ORDER BY month"
+  },
+  {
+    "question": "Quelle est la note moyenne des avis clients ?",
+    "sql": "SELECT AVG(review_score) AS avg_score FROM order_reviews"
+  },
+  {
+    "question": "Quels sont les vendeurs ayant le plus de commandes livrées en retard ?",
+    "sql": "SELECT seller_id, COUNT(*) AS late_deliveries FROM order_items oi JOIN orders o ON oi.order_id = o.order_id WHERE o.order_delivered_customer_date > o.order_estimated_delivery_date GROUP BY seller_id ORDER BY late_deliveries DESC LIMIT 10"
+  },
+  {
+    "question": "Quel est le panier moyen par commande ?",
+    "sql": "SELECT AVG(order_total) FROM (SELECT order_id, SUM(price) AS order_total FROM order_items GROUP BY order_id)"
+  },
+  {
+    "question": "Combien de clients distincts ont passé une commande ?",
+    "sql": "SELECT COUNT(DISTINCT customer_id) AS distinct_customers FROM orders"
+  },
+  {
+    "question": "Quelles sont les catégories de produits avec le plus d'avis négatifs (note 1 ou 2) ?",
+    "sql": "SELECT p.product_category_name, COUNT(*) AS negative_reviews FROM order_reviews r JOIN order_items oi ON r.order_id = oi.order_id JOIN products p ON oi.product_id = p.product_id WHERE r.review_score <= 2 GROUP BY p.product_category_name ORDER BY negative_reviews DESC LIMIT 10"
+  },
+  {
+    "question": "Quel est le délai de livraison moyen en jours ?",
+    "sql": "SELECT AVG(julianday(order_delivered_customer_date) - julianday(order_purchase_timestamp)) AS avg_delivery_days FROM orders WHERE order_delivered_customer_date IS NOT NULL"
+  },
+  {
+    "question": "Quel mode de paiement est le plus utilisé ?",
+    "sql": "SELECT payment_type, COUNT(*) AS usage_count FROM order_payments GROUP BY payment_type ORDER BY usage_count DESC"
+  },
+  {
+    "question": "Quels clients ont dépensé le plus au total ?",
+    "sql": "SELECT o.customer_id, SUM(oi.price) AS total_spent FROM orders o JOIN order_items oi ON o.order_id = oi.order_id GROUP BY o.customer_id ORDER BY total_spent DESC LIMIT 10"
+  },
+  {
+    "question": "Quelle proportion des commandes a été payée en plusieurs fois (versements) ?",
+    "sql": "SELECT SUM(CASE WHEN payment_installments > 1 THEN 1 ELSE 0 END) * 1.0 / COUNT(*) AS pct_installments FROM order_payments"
+  }
+]
