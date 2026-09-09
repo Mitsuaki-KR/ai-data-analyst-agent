@@ -1,6 +1,5 @@
 import sys
 import os
-os.environ["ANONYMIZED_TELEMETRY"] = "False"
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -10,6 +9,8 @@ from src.retrieval.config import CHROMA_DB_DIR, COLLECTION_NAME, FEW_SHOT_EXAMPL
 from src.retrieval.few_shot_store import build_few_shot_collection, get_chroma_client, load_few_shot_examples
 from src.generation.agent import SQLAgent
 
+
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
 # construit (ou reconstruit) la collection ChromaDB à partir des exemples
 client = get_chroma_client(CHROMA_DB_DIR)
 examples = load_few_shot_examples(FEW_SHOT_EXAMPLES_PATH)
