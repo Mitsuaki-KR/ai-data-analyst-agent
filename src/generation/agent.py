@@ -1,5 +1,6 @@
 import sqlite3
-
+from groq import RateLimitError
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 from langchain_groq import ChatGroq
 
 from src.generation.config import GROQ_API_KEY, MAX_RETRIES, MAX_ROWS_RETURNED, MODEL_NAME, QUERY_TIMEOUT_SECONDS
@@ -43,6 +44,12 @@ class SQLAgent:
 
         raise AgentError(f"Échec après {self.max_retries + 1} tentative(s). Dernière erreur : {last_error}")
 
+    @retry(
+        retry=retry_if_exception_type(RateLimitError),
+        wait=wait_exponential(multiplier=1, min=2, max=30),
+        stop=stop_after_attempt(5),
+    )
+    
     def _generate_sql(self, prompt: str) -> str:
         response = self.llm.invoke(prompt)
         return extract_sql_from_response(response.content)

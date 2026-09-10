@@ -69,3 +69,26 @@ même en production, une requête un peu lourde mais rapide pourrait échapper
 négligeable), et jeu de données de test agrandi (50 lignes x 5 tables en
 produit cartésien) pour garantir une requête réellement longue, plutôt
 qu'un timeout microscopique impossible à mesurer de façon fiable.
+
+
+## Finding #1 — Analyse des divergences d'équivalence sémantique (10/09/2026)
+
+Sur 10 questions évaluées, 3 ont été jugées "non équivalentes" par la métrique
+SQLSemanticEquivalence (70% de taux global). Analyse détaillée de chaque cas :
+
+1. **Référence de test imprécise** (question sur les notes 5 étoiles) :
+   la requête de référence comptait les avis (COUNT(*)) au lieu des commandes
+   distinctes (COUNT(DISTINCT order_id)), alors que la question portait
+   explicitement sur des commandes. Corrigé dans testset.json.
+
+2. **Faux négatif du juge LLM** (question sur la répartition par statut) :
+   l'agent ajoutait un ORDER BY et un alias de colonne différent — différences
+   cosmétiques n'affectant pas la justesse du résultat. Le juge LLM
+   (SQLSemanticEquivalence) semble parfois trop strict sur la forme plutôt
+   que le fond. Limite connue de la métrique elle-même, pas de l'agent.
+
+3. **Ambiguïté réelle non résolue** (question sur les livraisons anticipées) :
+   l'agent exclut les commandes sans date estimée renseignée du calcul,
+   la référence les inclut au dénominateur (comptées comme "non livrées à
+   temps"). Les deux interprétations sont défendables — la question elle-même
+   est sous-spécifiée. Documenté comme limite honnête du système :

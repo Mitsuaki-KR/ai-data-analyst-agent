@@ -1,0 +1,110 @@
+{
+  "summary": {
+    "total_questions": 10,
+    "execution_success_rate": 1.0,
+    "avg_datacompy_f1": 0.925,
+    "semantic_equivalence_rate": 0.7
+  },
+  "details": [
+    {
+      "question": "Combien de commandes ont été passées au total ?",
+      "reference_sql": "SELECT COUNT(*) FROM orders",
+      "generated_sql": "SELECT COUNT(*) AS total_orders FROM orders",
+      "execution_success": true,
+      "attempts": 1,
+      "datacompy_f1": 1.0,
+      "semantic_equivalence": 1.0,
+      "semantic_equivalence_reason": "Response: The generated SQL query counts all rows in the orders table and returns the count as a column named total_orders.\nReference: The reference SQL query counts all rows in the orders table and returns the count."
+    },
+    {
+      "question": "Quelle est la valeur totale des paiements effectués par carte de crédit ?",
+      "reference_sql": "SELECT SUM(payment_value) FROM order_payments WHERE payment_type = 'credit_card'",
+      "generated_sql": "SELECT SUM(payment_value) AS total_credit_card_payments\nFROM order_payments\nWHERE payment_type = 'credit_card'",
+      "execution_success": true,
+      "attempts": 1,
+      "datacompy_f1": 1.0,
+      "semantic_equivalence": 1.0,
+      "semantic_equivalence_reason": "Response: The generated SQL query calculates the total sum of payment_value for rows in order_payments where payment_type is 'credit_card', returning the result with the column alias total_credit_card_payments.\nReference: The reference SQL query calculates the total sum of payment_value for rows in order_payments where payment_type is 'credit_card', returning the sum without an explicit column alias."
+    },
+    {
+      "question": "Quels sont les 3 États des clients avec le plus de commandes ?",
+      "reference_sql": "SELECT c.customer_state, COUNT(*) AS order_count FROM orders o JOIN customers c ON o.customer_id = c.customer_id GROUP BY c.customer_state ORDER BY order_count DESC LIMIT 3",
+      "generated_sql": "SELECT c.customer_state, COUNT(*) AS order_count\nFROM orders o\nJOIN customers c ON o.customer_id = c.customer_id\nGROUP BY c.customer_state\nORDER BY order_count DESC\nLIMIT 3",
+      "execution_success": true,
+      "attempts": 1,
+      "datacompy_f1": 1.0,
+      "semantic_equivalence": 1.0,
+      "semantic_equivalence_reason": "Response: The generated SQL query joins the orders table with the customers table on customer_id, groups the resulting rows by the customers' state (customer_state), counts the total number of orders per state as order_count, orders the groups in descending order of order_count, and returns the top three states with the highest order counts.\nReference: The reference SQL query performs the same join between orders and customers, groups by customer_state, counts the orders per state as order_count, sorts the groups by order_count in descending order, and limits the result to the three states with the greatest number of orders."
+    },
+    {
+      "question": "Quel est le prix moyen des produits vendus ?",
+      "reference_sql": "SELECT AVG(price) FROM order_items",
+      "generated_sql": "SELECT AVG(price) AS average_price FROM order_items",
+      "execution_success": true,
+      "attempts": 1,
+      "datacompy_f1": 1.0,
+      "semantic_equivalence": 1.0,
+      "semantic_equivalence_reason": "Response: The generated SQL query computes the average of the price column from the order_items table and returns the result with the column alias average_price.\nReference: The reference SQL query computes the average of the price column from the order_items table and returns the result without an explicit column alias."
+    },
+    {
+      "question": "Combien de commandes ont reçu une note de 5 ?",
+      "reference_sql": "SELECT COUNT(*) FROM order_reviews WHERE review_score = 5",
+      "generated_sql": "SELECT COUNT(DISTINCT order_id) AS orders_with_score_5\nFROM order_reviews\nWHERE review_score = 5",
+      "execution_success": true,
+      "attempts": 1,
+      "datacompy_f1": 1.0,
+      "semantic_equivalence": 0.0,
+      "semantic_equivalence_reason": "Response: The generated SQL query counts the number of distinct order_id values in the order_reviews table where review_score equals 5, effectively returning the number of orders that have at least one 5‑star review.\nReference: The reference SQL query counts all rows in the order_reviews table where review_score equals 5, returning the total number of 5‑star reviews."
+    },
+    {
+      "question": "Quels sont les 5 vendeurs ayant généré le plus de revenus ?",
+      "reference_sql": "SELECT seller_id, SUM(price) AS revenue FROM order_items GROUP BY seller_id ORDER BY revenue DESC LIMIT 5",
+      "generated_sql": "SELECT seller_id, SUM(price) AS revenue\nFROM order_items\nGROUP BY seller_id\nORDER BY revenue DESC\nLIMIT 5",
+      "execution_success": true,
+      "attempts": 1,
+      "datacompy_f1": 1.0,
+      "semantic_equivalence": 1.0,
+      "semantic_equivalence_reason": "Response: The generated SQL query selects each seller_id from the order_items table, calculates the total revenue per seller by summing the price column (aliasing it as revenue), groups the results by seller_id, orders the groups by revenue in descending order, and returns only the top five rows.\nReference: The reference SQL query performs the same operation: it retrieves seller_id and the summed price (named revenue) from order_items, groups by seller_id, orders the groups by revenue descending, and limits the output to the five highest‑revenue sellers."
+    },
+    {
+      "question": "Quelle est la répartition des commandes par statut ?",
+      "reference_sql": "SELECT order_status, COUNT(*) AS count FROM orders GROUP BY order_status",
+      "generated_sql": "SELECT order_status, COUNT(*) AS nb_commandes\nFROM orders\nGROUP BY order_status\nORDER BY nb_commandes DESC",
+      "execution_success": true,
+      "attempts": 1,
+      "datacompy_f1": 0.25,
+      "semantic_equivalence": 0.0,
+      "semantic_equivalence_reason": "Response: The generated query groups rows in the orders table by order_status, counts the number of rows in each group (COUNT(*)) and returns two columns: order_status and the count labeled nb_commandes. After grouping, it sorts the result set in descending order of nb_commandes.\nReference: The reference query also groups rows in the orders table by order_status and counts the rows in each group (COUNT(*)), returning order_status and the count labeled count. It does not impose any ordering on the result set."
+    },
+    {
+      "question": "Quel est le poids moyen des produits en grammes ?",
+      "reference_sql": "SELECT AVG(product_weight_g) FROM products",
+      "generated_sql": "SELECT AVG(product_weight_g) AS average_weight_grams FROM products",
+      "execution_success": true,
+      "attempts": 1,
+      "datacompy_f1": 1.0,
+      "semantic_equivalence": 1.0,
+      "semantic_equivalence_reason": "Response: The generated SQL query calculates the average of the product_weight_g column from the products table and assigns the alias average_weight_grams to the resulting column.\nReference: The reference SQL query calculates the average of the product_weight_g column from the products table."
+    },
+    {
+      "question": "Quel est le nombre de vendeurs distincts par État ?",
+      "reference_sql": "SELECT seller_state, COUNT(DISTINCT seller_id) AS seller_count FROM sellers GROUP BY seller_state",
+      "generated_sql": "SELECT seller_state, COUNT(DISTINCT seller_id) AS distinct_seller_count\nFROM sellers\nGROUP BY seller_state\nORDER BY seller_state",
+      "execution_success": true,
+      "attempts": 1,
+      "datacompy_f1": 1.0,
+      "semantic_equivalence": 1.0,
+      "semantic_equivalence_reason": "Response: The generated SQL query selects each seller_state from the sellers table and counts the distinct seller_id values for that state, naming the count column distinct_seller_count. It groups by seller_state and orders the result by seller_state.\nReference: The reference SQL query selects each seller_state from the sellers table and counts the distinct seller_id values for that state, naming the count column seller_count. It groups by seller_state."
+    },
+    {
+      "question": "Quelle proportion des commandes a été livrée avant la date estimée ?",
+      "reference_sql": "SELECT SUM(CASE WHEN order_delivered_customer_date < order_estimated_delivery_date THEN 1 ELSE 0 END) * 1.0 / COUNT(*) FROM orders WHERE order_delivered_customer_date IS NOT NULL",
+      "generated_sql": "SELECT \n    SUM(CASE WHEN order_delivered_customer_date < order_estimated_delivery_date THEN 1 ELSE 0 END) * 1.0 \n    / COUNT(*) AS pct_delivered_before_estimated\nFROM orders\nWHERE order_delivered_customer_date IS NOT NULL\n  AND order_estimated_delivery_date IS NOT NULL",
+      "execution_success": true,
+      "attempts": 1,
+      "datacompy_f1": 1.0,
+      "semantic_equivalence": 0.0,
+      "semantic_equivalence_reason": "Response: The generated query computes the fraction of orders that were delivered before their estimated delivery date. It first counts (with SUM and a CASE expression) how many orders satisfy order_delivered_customer_date < order_estimated_delivery_date, multiplies that count by 1.0 to force a floating‑point result, and divides by the total number of rows considered. The WHERE clause restricts the rows to those where both order_delivered_customer_date and order_estimated_delivery_date are not NULL, and the result is returned with the alias pct_delivered_before_estimated.\nReference: The reference query also computes a fraction of orders delivered before the estimated delivery date. It sums a CASE expression that yields 1 when order_delivered_customer_date < order_estimated_delivery_date and 0 otherwise, multiplies by 1.0, and divides by the total number of rows. The WHERE clause only requires order_delivered_customer_date to be non‑NULL, so rows with a NULL order_estimated_delivery_date are still counted in the denominator (contributing 0 to the numerator). The query returns the numeric result without an explicit alias."
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+[
+  {"question": "Combien de commandes ont été passées au total ?", "reference_sql": "SELECT COUNT(*) FROM orders"},
+  {"question": "Quelle est la valeur totale des paiements effectués par carte de crédit ?", "reference_sql": "SELECT SUM(payment_value) FROM order_payments WHERE payment_type = 'credit_card'"},
+  {"question": "Quels sont les 3 États des clients avec le plus de commandes ?", "reference_sql": "SELECT c.customer_state, COUNT(*) AS order_count FROM orders o JOIN customers c ON o.customer_id = c.customer_id GROUP BY c.customer_state ORDER BY order_count DESC LIMIT 3"},
+  {"question": "Quel est le prix moyen des produits vendus ?", "reference_sql": "SELECT AVG(price) FROM order_items"},
+  {"question": "Combien de commandes ont reçu une note de 5 ?", "reference_sql": "SELECT COUNT(DISTINCT order_id) FROM order_reviews WHERE review_score = 5"},
+  {"question": "Quels sont les 5 vendeurs ayant généré le plus de revenus ?", "reference_sql": "SELECT seller_id, SUM(price) AS revenue FROM order_items GROUP BY seller_id ORDER BY revenue DESC LIMIT 5"},
+  {"question": "Quelle est la répartition des commandes par statut ?", "reference_sql": "SELECT order_status, COUNT(*) AS count FROM orders GROUP BY order_status"},
+  {"question": "Quel est le poids moyen des produits en grammes ?", "reference_sql": "SELECT AVG(product_weight_g) FROM products"},
+  {"question": "Quel est le nombre de vendeurs distincts par État ?", "reference_sql": "SELECT seller_state, COUNT(DISTINCT seller_id) AS seller_count FROM sellers GROUP BY seller_state"},
+  {"question": "Quelle proportion des commandes a été livrée avant la date estimée ?", "reference_sql": "SELECT SUM(CASE WHEN order_delivered_customer_date < order_estimated_delivery_date THEN 1 ELSE 0 END) * 1.0 / COUNT(*) FROM orders WHERE order_delivered_customer_date IS NOT NULL"}
+]
