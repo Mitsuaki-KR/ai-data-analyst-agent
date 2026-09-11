@@ -6,6 +6,7 @@ class AskRequest(BaseModel):
 
 
 class AskResponse(BaseModel):
+    answer: str
     sql: str
     columns: list[str]
     rows: list[tuple]

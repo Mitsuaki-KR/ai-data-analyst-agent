@@ -9,10 +9,18 @@ PNG_SIGNATURE_B64_PREFIX = "iVBORw0KGgo"  # signature PNG encodée en base64
 client = TestClient(app)
 
 
+class FakeLLM:
+    def invoke(self, _prompt):
+        class Response:
+            content = "Réponse de test générée."
+        return Response()
+
+
 class FakeAgent:
     def __init__(self, result=None, error=None):
         self._result = result
         self._error = error
+        self.llm = FakeLLM()
 
     def ask(self, question):
         if self._error:
@@ -42,6 +50,7 @@ def test_ask_returns_no_chart_for_single_value_result():
     data = response.json()
     assert data["sql"] == fake_result["sql"]
     assert data["chart_base64"] is None
+    assert data["answer"] == "Réponse de test générée."
 
     app.dependency_overrides.clear()
 
@@ -61,7 +70,7 @@ def test_ask_returns_chart_for_multi_row_result():
     data = response.json()
     assert data["chart_base64"] is not None
     assert data["chart_base64"].startswith(PNG_SIGNATURE_B64_PREFIX)
-
+    assert data["answer"] == "Réponse de test générée."
     app.dependency_overrides.clear()
 
 

@@ -7,6 +7,7 @@ from src.api.schemas import AskRequest, AskResponse
 from src.generation.agent import AgentError, SQLAgent
 from src.viz.chart_generator import generate_chart
 from src.viz.chart_selector import select_chart_type
+from src.generation.answer_synthesizer import synthesize_answer
 
 app = FastAPI(title="AI Data Analyst Agent")
 
@@ -29,7 +30,10 @@ def ask(request: AskRequest, agent: SQLAgent = Depends(get_agent)):
         chart_bytes = generate_chart(result["columns"], result["rows"], chart_type, request.question)
         chart_base64 = base64.b64encode(chart_bytes).decode("utf-8")
 
+    answer_text = synthesize_answer(agent.llm, request.question, result["columns"], result["rows"])
+
     return AskResponse(
+        answer=answer_text,
         sql=result["sql"],
         columns=result["columns"],
         rows=result["rows"],
